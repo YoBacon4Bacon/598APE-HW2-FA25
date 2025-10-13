@@ -42,65 +42,60 @@ void set_coeff(Poly *p, int64_t degree, double value) {
   p->coeffs[degree] = value;
 }
 
-Poly coeff_mod(Poly p, double modulus) {
-  Poly out = create_poly();
+void coeff_mod(Poly *out, const Poly *p, double modulus) {
+  Poly temp = create_poly();
   for (int i = 0; i < MAX_POLY_DEGREE; i++) {
-    if (fabs(p.coeffs[i]) > 1e-9) {
-      double rounded = round(p.coeffs[i]);
+    if (fabs(p->coeffs[i]) > 1e-9) {
+      double rounded = round(p->coeffs[i]);
       double m = positive_fmod(rounded, modulus);
-      out.coeffs[i] = m;
+      temp.coeffs[i] = m;
     }
   }
-  return out;
+  *out = temp;
 }
 
-Poly poly_add(Poly a, Poly b) {
-  Poly sum = create_poly();
+void poly_add(Poly *out, const Poly *a, const Poly *b) {
   for (int i = 0; i < MAX_POLY_DEGREE; i++) {
-    sum.coeffs[i] = a.coeffs[i] + b.coeffs[i];
+    out->coeffs[i] = a->coeffs[i] + b->coeffs[i];
   }
-  return sum;
 }
 
-Poly poly_mul_scalar(Poly p, double scalar) {
-  Poly res = create_poly();
+void poly_mul_scalar(Poly *out, const Poly *p, double scalar) {
   for (int i = 0; i < MAX_POLY_DEGREE; i++) {
-    res.coeffs[i] = p.coeffs[i] * scalar;
+    out->coeffs[i] = p->coeffs[i] * scalar;
   }
-  return res;
 }
 
-Poly poly_mul(Poly a, Poly b) {
-  Poly res = create_poly();
+void poly_mul(Poly *out, const Poly *a, const Poly *b) {
+  *out = create_poly();
 
   for (int i = 0; i < MAX_POLY_DEGREE; i++) {
-    if (fabs(a.coeffs[i]) > 1e-9) {
+    if (fabs(a->coeffs[i]) > 1e-9) {
       for (int j = 0; j < MAX_POLY_DEGREE; j++) {
-        if (fabs(b.coeffs[j]) > 1e-9) {
+        if (fabs(b->coeffs[j]) > 1e-9) {
           assert(i + j < MAX_POLY_DEGREE);
-          res.coeffs[i + j] += a.coeffs[i] * b.coeffs[j];
+          out->coeffs[i + j] += a->coeffs[i] * b->coeffs[j];
         }
       }
     }
   }
-  return res;
 }
 
-void poly_divmod(Poly num, Poly den, Poly *quot, Poly *rem) {
+void poly_divmod(const Poly *num, const Poly *den, Poly *quot, Poly *rem) {
   // In our case `den` should always be (x^n + 1)
-  assert(poly_degree(den) > 0 || fabs(get_coeff(den, 0)) > 1e-9);
+  assert(poly_degree(*den) > 0 || fabs(get_coeff(*den, 0)) > 1e-9);
 
-  size_t ndeg = poly_degree(num);
-  size_t ddeg = poly_degree(den);
+  size_t ndeg = poly_degree(*num);
+  size_t ddeg = poly_degree(*den);
 
   *quot = create_poly();
-  *rem = num;
+  memcpy(rem->coeffs, num->coeffs, sizeof(num->coeffs));
 
   if (ndeg < ddeg) {
     return;
   }
 
-  double d_lead = get_coeff(den, ddeg);
+  double d_lead = get_coeff(*den, ddeg);
   assert(fabs(d_lead) > 1e-9);
 
   for (int64_t k = ndeg - ddeg; k >= 0; --k) {
@@ -110,15 +105,15 @@ void poly_divmod(Poly num, Poly den, Poly *quot, Poly *rem) {
     quot->coeffs[k] += coeff;
 
     for (int i = 0; i < MAX_POLY_DEGREE; i++) {
-      if (fabs(den.coeffs[i]) > 1e-9) {
+      if (fabs(den->coeffs[i]) > 1e-9) {
         int64_t deg = i + k;
         assert(deg < MAX_POLY_DEGREE);
-        rem->coeffs[deg] -= coeff * den.coeffs[i];
+        rem->coeffs[deg] -= coeff * den->coeffs[i];
       }
     }
   }
 
-  assert(poly_degree(*rem) < poly_degree(den));
+  assert(poly_degree(*rem) < poly_degree(*den));
 }
 
 Poly poly_round_div_scalar(Poly x, double divisor) {

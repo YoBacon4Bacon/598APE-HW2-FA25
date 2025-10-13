@@ -63,7 +63,8 @@ int main(int argc, char **argv) {
   set_coeff(&poly_mod, 0, 1.0);
   set_coeff(&poly_mod, n, 1.0);
 
-  KeyPair keys = keygen(n, q, poly_mod);
+  KeyPair keys;
+  keygen(&keys, n, q, &poly_mod);
   PublicKey pk = keys.pk;
   SecretKey sk = keys.sk;
 
@@ -99,7 +100,7 @@ int main(int argc, char **argv) {
   Ciphertext **B_enc = alloc_ct_matrix(dim, dim);
   for (size_t j = 0; j < dim; ++j) {
     for (size_t k = 0; k < dim; ++k) {
-      B_enc[j][k] = encrypt(pk, n, q, poly_mod, t, B[j][k]);
+      encrypt(&B_enc[j][k], pk, n, q, &poly_mod, t, B[j][k]);
     }
   }
 
@@ -110,10 +111,10 @@ int main(int argc, char **argv) {
     A_enc = alloc_ct_matrix(dim, dim);
     for (size_t i = 0; i < dim; ++i) {
       for (size_t j = 0; j < dim; ++j) {
-        A_enc[i][j] = encrypt(pk, n, q, poly_mod, t, A[i][j]);
+        encrypt(&A_enc[i][j], pk, n, q, &poly_mod, t, A[i][j]);
       }
     }
-    evk = evaluate_keygen(sk, n, q, poly_mod, p);
+    evaluate_keygen(&evk, sk, n, q, &poly_mod, p);
   }
 
   // Encrypted matmul
@@ -128,12 +129,13 @@ int main(int argc, char **argv) {
         Ciphertext acc_ct;
 
         for (size_t j = 0; j < dim; ++j) {
-          Ciphertext term = mul_plain(B_enc[j][k], q, t, poly_mod, A[i][j]);
+          Ciphertext term;
+          mul_plain(&term, B_enc[j][k], q, t, &poly_mod, A[i][j]);
           if (first) {
             acc_ct = term;
             first = 0;
           } else {
-            acc_ct = add_cipher(acc_ct, term, q, poly_mod);
+            add_cipher(&acc_ct, acc_ct, term, q, &poly_mod);
           }
         }
         C_enc[i][k] = acc_ct;
@@ -147,13 +149,13 @@ int main(int argc, char **argv) {
         Ciphertext acc_ct;
 
         for (size_t j = 0; j < dim; ++j) {
-          Ciphertext term =
-              mul_cipher(A_enc[i][j], B_enc[j][k], q, t, p, poly_mod, evk);
+          Ciphertext term;
+          mul_cipher(&term, A_enc[i][j], B_enc[j][k], q, t, p, &poly_mod, evk);
           if (first) {
             acc_ct = term;
             first = 0;
           } else {
-            acc_ct = add_cipher(acc_ct, term, q, poly_mod);
+            add_cipher(&acc_ct, acc_ct, term, q, &poly_mod);
           }
         }
         C_enc[i][k] = acc_ct;
@@ -165,7 +167,7 @@ int main(int argc, char **argv) {
   int64_t **C_dec = alloc_matrix(dim, dim);
   for (size_t i = 0; i < dim; ++i) {
     for (size_t k = 0; k < dim; ++k) {
-      C_dec[i][k] = decrypt(sk, n, q, poly_mod, t, C_enc[i][k]);
+      C_dec[i][k] = decrypt(sk, n, q, &poly_mod, t, C_enc[i][k]);
     }
   }
 

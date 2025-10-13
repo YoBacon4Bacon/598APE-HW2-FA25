@@ -13,15 +13,15 @@ double get_coeff(Poly p, int64_t degree);
 
 void set_coeff(Poly *p, int64_t degree, double value);
 
-Poly coeff_mod(Poly p, double modulus);
+void coeff_mod(Poly *out, const Poly *p, double modulus);
 
-Poly poly_add(Poly a, Poly b);
+void poly_add(Poly *out, const Poly *a, const Poly *b);
 
-Poly poly_mul_scalar(Poly p, double scalar);
+void poly_mul_scalar(Poly *out, const Poly *p, double scalar);
 
-Poly poly_mul(Poly a, Poly b);
+void poly_mul(Poly *out, const Poly *a, const Poly *b);
 
-void poly_divmod(Poly numerator, Poly denominator, Poly *quotient,
+void poly_divmod(const Poly *numerator, const Poly *denominator, Poly *quotient,
                  Poly *remainder);
 
 Poly create_poly(void);

@@ -79,14 +79,15 @@ static void rgb_to_grayscale_plain(uint8_t *input, uint8_t *output, int width,
 static void rgb_to_grayscale_fhe(Ciphertext *r_enc, Ciphertext *g_enc,
                                  Ciphertext *b_enc, Ciphertext *output_enc,
                                  int total_pixels, int64_t q, int64_t t,
-                                 Poly poly_mod) {
+                                 const Poly *poly_mod) {
   int64_t inv3 = mod_inverse(3, t);
   assert(inv3 != -1 &&
          "3 has no modular inverse modulo t; choose t coprime with 3");
   for (int i = 0; i < total_pixels; i++) {
-    Ciphertext sum = add_cipher(r_enc[i], g_enc[i], q, poly_mod);
-    sum = add_cipher(sum, b_enc[i], q, poly_mod);
-    output_enc[i] = mul_plain(sum, q, t, poly_mod, inv3);
+    Ciphertext sum;
+    add_cipher(&sum, r_enc[i], g_enc[i], q, poly_mod);
+    add_cipher(&sum, sum, b_enc[i], q, poly_mod);
+    mul_plain(&output_enc[i], sum, q, t, poly_mod, inv3);
   }
 }
 
@@ -122,7 +123,8 @@ int main(int argc, char **argv) {
   set_coeff(&poly_mod, n, 1);
 
   printf("Generating keys...\n");
-  KeyPair keys = keygen(n, q, poly_mod);
+  KeyPair keys;
+  keygen(&keys, n, q, &poly_mod);
   PublicKey pk = keys.pk;
   SecretKey sk = keys.sk;
 
@@ -137,9 +139,9 @@ int main(int argc, char **argv) {
     uint8_t g = img.data[i * img.channels + 1];
     uint8_t b = img.data[i * img.channels + 2];
 
-    r_enc[i] = encrypt(pk, n, q, poly_mod, t, r);
-    g_enc[i] = encrypt(pk, n, q, poly_mod, t, g);
-    b_enc[i] = encrypt(pk, n, q, poly_mod, t, b);
+    encrypt(&r_enc[i], pk, n, q, &poly_mod, t, r);
+    encrypt(&g_enc[i], pk, n, q, &poly_mod, t, g);
+    encrypt(&b_enc[i], pk, n, q, &poly_mod, t, b);
   }
   clock_t enc_end = clock();
   double enc_time = ((double)(enc_end - enc_start)) / CLOCKS_PER_SEC;
@@ -149,7 +151,7 @@ int main(int argc, char **argv) {
       (Ciphertext *)malloc(total_pixels * sizeof(Ciphertext));
   clock_t fhe_start = clock();
   rgb_to_grayscale_fhe(r_enc, g_enc, b_enc, gray_enc, total_pixels, q, t,
-                       poly_mod);
+                       &poly_mod);
   clock_t fhe_end = clock();
   double fhe_time = ((double)(fhe_end - fhe_start)) / CLOCKS_PER_SEC;
 
@@ -159,7 +161,7 @@ int main(int argc, char **argv) {
   int64_t th1 = (t + 2) / 3;
   int64_t th2 = (2 * t + 2) / 3;
   for (int i = 0; i < total_pixels; i++) {
-    int64_t val = decrypt(sk, n, q, poly_mod, t, gray_enc[i]);
+    int64_t val = decrypt(sk, n, q, &poly_mod, t, gray_enc[i]);
     if (val >= th2) {
       val -= th2;
     } else if (val >= th1) {
