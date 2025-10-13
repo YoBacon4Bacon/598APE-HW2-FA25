@@ -23,6 +23,8 @@ bench_bw.exe: $(OBJ_DIR) $(OBJ_FILES) ./benchmark/bench_bw.c
 bench_sobel.exe: $(OBJ_DIR) $(OBJ_FILES) ./benchmark/bench_sobel.c
 	$(CC) ./benchmark/bench_sobel.c -o $@ $(OBJ_FILES) $(CFLAGS)
 
+everything: all bench_matmul.exe bench_bw.exe bench_sobel.exe
+
 clean:
 	rm -f ./*.exe
 	rm -f ./*.o

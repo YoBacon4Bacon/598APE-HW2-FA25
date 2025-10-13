@@ -79,7 +79,7 @@ static void rgb_to_grayscale_plain(uint8_t *input, uint8_t *output, int width,
 static void rgb_to_grayscale_fhe(Ciphertext *r_enc, Ciphertext *g_enc,
                                  Ciphertext *b_enc, Ciphertext *output_enc,
                                  int total_pixels, int64_t q, int64_t t,
-                                 Poly poly_mod) {
+                                 const Poly &poly_mod) {
   int64_t inv3 = mod_inverse(3, t);
   assert(inv3 != -1 &&
          "3 has no modular inverse modulo t; choose t coprime with 3");

@@ -87,7 +87,7 @@ static void sobel_plain(uint8_t *input, uint8_t *output, int width,
   }
 }
 
-Ciphertext encode_zero(int64_t q, Poly poly_mod) {
+Ciphertext encode_zero(int64_t q, const Poly &poly_mod) {
   Ciphertext ct;
   ct.c0 = encode_plain_integer(q, 0);
   ct.c1 = encode_plain_integer(q, 0);
@@ -95,7 +95,7 @@ Ciphertext encode_zero(int64_t q, Poly poly_mod) {
 }
 
 static void sobel_fhe(Ciphertext *input_enc, Ciphertext *output_enc, int width,
-                      int height, int64_t q, int64_t t, Poly poly_mod) {
+                      int height, int64_t q, int64_t t, const Poly &poly_mod) {
 
   for (int y = 1; y < height - 1; y++) {
     for (int x = 1; x < width - 1; x++) {
