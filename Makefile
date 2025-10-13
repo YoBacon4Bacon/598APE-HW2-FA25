@@ -1,5 +1,5 @@
-CC := gcc
-CFLAGS := -O2 -lm -g -Werror -std=c99
+CC := g++
+CFLAGS := -O2 -lm -g -Werror -std=c++11
 OBJ_DIR := ./bin/
 
 C_FILES := $(wildcard src/*.c)
