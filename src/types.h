@@ -8,6 +8,9 @@
 
 typedef struct {
   double coeffs[MAX_POLY_DEGREE];
+
+  // an upper bound on polynomial degree
+  size_t max_degree;
 } Poly;
 
 typedef struct {

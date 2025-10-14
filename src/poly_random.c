@@ -11,6 +11,7 @@ Poly gen_binary_poly(size_t size) {
     double v = (rand() % 2) ? 1.0 : 0.0;
     p.coeffs[i] = v;
   }
+  p.max_degree = size;
   return p;
 }
 
@@ -34,6 +35,7 @@ Poly gen_normal_poly(size_t size, double mean, double stddev) {
     double v = round(gen_normal(mean, stddev));
     p.coeffs[i] = v;
   }
+  p.max_degree = size;
   return p;
 }
 
@@ -44,5 +46,6 @@ Poly gen_uniform_poly(size_t size, double modulus) {
     double v = ((double)rand() / RAND_MAX) * modulus;
     p.coeffs[i] = v;
   }
+  p.max_degree = size;
   return p;
 }

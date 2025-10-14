@@ -3,6 +3,7 @@
 #include "ring_utils.h"
 #include <assert.h>
 #include <math.h>
+#include <algorithm>
 
 Ciphertext add_plain(const Ciphertext &ct, double q, double t, const Poly &poly_mod,
                      double pt) {
@@ -34,6 +35,12 @@ Ciphertext mul_plain(const Ciphertext &ct, double q, double t, const Poly &poly_
 
 Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, double t,
                       double p, const Poly &poly_mod, const EvalKey &rlk) {
+  size_t n = std::max({
+    c1.c0.max_degree,
+    c2.c0.max_degree,
+    c1.c1.max_degree,
+    c2.c1.max_degree
+  });
   Poly c0_prod = ring_mul_no_mod_q(c1.c0, c2.c0, poly_mod);
   Poly c1_left = ring_mul_no_mod_q(c1.c0, c2.c1, poly_mod);
   Poly c1_right = ring_mul_no_mod_q(c1.c1, c2.c0, poly_mod);
@@ -43,7 +50,7 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
   Poly c0_res = create_poly();
   Poly c1_res = create_poly();
   Poly c2_res = create_poly();
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i <= n; i++) {
     if (fabs(c0_prod.coeffs[i]) > 1e-9) {
       c0_res.coeffs[i] = round(t * c0_prod.coeffs[i] / q);
     }
@@ -54,6 +61,9 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
       c2_res.coeffs[i] = round(t * c2_prod.coeffs[i] / q);
     }
   }
+  c0_res.max_degree = n;
+  c1_res.max_degree = n;
+  c2_res.max_degree = n;
 
   Poly c0_modq = coeff_mod(c0_res, q);
   Poly c1_modq = coeff_mod(c1_res, q);
@@ -65,7 +75,7 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
 
   Poly div_b = create_poly();
   Poly div_a = create_poly();
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i <= n; i++) {
     double vb = prod_b.coeffs[i];
     double va = prod_a.coeffs[i];
     if (fabs(vb) > 1e-9) {
@@ -75,6 +85,8 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
       div_a.coeffs[i] = round(va / p);
     }
   }
+  div_b.max_degree = n;
+  div_a.max_degree = n;
 
   Poly c20_modq = coeff_mod(div_b, q);
   Poly c21_modq = coeff_mod(div_a, q);
