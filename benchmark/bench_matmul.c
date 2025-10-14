@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
   printf("Matrix size: %zux%zu, Mode: %d (%s)\n", dim, dim, mode,
          mode == 0 ? "ct*pt" : "ct*ct");
 
-  Poly poly_mod = create_poly();
+  Poly poly_mod = create_poly(n);
   set_coeff(&poly_mod, 0, 1.0);
   set_coeff(&poly_mod, n, 1.0);
 

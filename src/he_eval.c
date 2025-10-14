@@ -47,9 +47,9 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
   Poly c1_sum = ring_add_no_mod_q(c1_left, c1_right, poly_mod);
   Poly c2_prod = ring_mul_no_mod_q(c1.c1, c2.c1, poly_mod);
 
-  Poly c0_res = create_poly();
-  Poly c1_res = create_poly();
-  Poly c2_res = create_poly();
+  Poly c0_res = create_poly(n);
+  Poly c1_res = create_poly(n);
+  Poly c2_res = create_poly(n);
   for (size_t i = 0; i <= n; i++) {
     if (fabs(c0_prod.coeffs[i]) > 1e-9) {
       c0_res.coeffs[i] = round(t * c0_prod.coeffs[i] / q);
@@ -61,9 +61,6 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
       c2_res.coeffs[i] = round(t * c2_prod.coeffs[i] / q);
     }
   }
-  c0_res.max_degree = n;
-  c1_res.max_degree = n;
-  c2_res.max_degree = n;
 
   Poly c0_modq = coeff_mod(c0_res, q);
   Poly c1_modq = coeff_mod(c1_res, q);
@@ -73,8 +70,8 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
   Poly prod_b = ring_mul_no_mod_q(rlk.b, c2_modq, poly_mod);
   Poly prod_a = ring_mul_no_mod_q(rlk.a, c2_modq, poly_mod);
 
-  Poly div_b = create_poly();
-  Poly div_a = create_poly();
+  Poly div_b = create_poly(n);
+  Poly div_a = create_poly(n);
   for (size_t i = 0; i <= n; i++) {
     double vb = prod_b.coeffs[i];
     double va = prod_a.coeffs[i];
@@ -85,8 +82,6 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
       div_a.coeffs[i] = round(va / p);
     }
   }
-  div_b.max_degree = n;
-  div_a.max_degree = n;
 
   Poly c20_modq = coeff_mod(div_b, q);
   Poly c21_modq = coeff_mod(div_a, q);

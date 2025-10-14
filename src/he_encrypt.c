@@ -4,10 +4,9 @@
 #include "ring_utils.h"
 
 Poly encode_plain_integer(double t, double pt) {
-  Poly m = create_poly();
+  Poly m = create_poly(0);
   double v = positive_fmod(pt, t);
   m.coeffs[0] = v;
-  m.max_degree = 1;
   return m;
 }
 
