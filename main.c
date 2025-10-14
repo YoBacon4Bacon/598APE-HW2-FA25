@@ -14,7 +14,7 @@ int main() {
   int64_t t = 1ll << 8;
 
   // poly_mod = X^n + 1
-  Poly poly_mod = create_poly();
+  Poly poly_mod = create_poly(n);
   set_coeff(&poly_mod, 0, 1.0);
   set_coeff(&poly_mod, n, 1.0);
 

@@ -9,7 +9,8 @@
 typedef struct {
   double coeffs[MAX_POLY_DEGREE];
 
-  // an upper bound on polynomial degree
+  // an upper bound on polynomial degree.
+  // coeffs[max_degree+1:] is assumed to be garbage
   size_t max_degree;
 } Poly;
 

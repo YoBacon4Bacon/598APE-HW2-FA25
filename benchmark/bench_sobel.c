@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 
   int total_pixels = img.width * img.height;
 
-  Poly poly_mod = create_poly();
+  Poly poly_mod = create_poly(n);
   set_coeff(&poly_mod, 0, 1);
   set_coeff(&poly_mod, n, 1);
 
