@@ -128,6 +128,41 @@ void poly_divmod(const Poly &num, const Poly &den, Poly *quot, Poly *rem) {
   assert(poly_degree(*rem) < poly_degree(den));
 }
 
+Poly poly_rem(const Poly &num, const Poly &den) {
+  // In our case `den` should always be (x^n + 1)
+  assert(poly_degree(den) > 0 || fabs(get_coeff(den, 0)) > 1e-9);
+
+  size_t ndeg = poly_degree(num);
+  size_t ddeg = poly_degree(den);
+
+  Poly rem = num;
+
+  if (ndeg < ddeg) {
+    return rem;
+  }
+
+  double d_lead = get_coeff(den, ddeg);
+  assert(fabs(d_lead) > 1e-9);
+
+  for (int64_t k = ndeg - ddeg; k >= 0; --k) {
+    int64_t target_deg = ddeg + k;
+    double r_coeff = get_coeff(rem, target_deg);
+    double coeff = trunc(round(r_coeff) / round(d_lead));
+
+    for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+      if (fabs(den.coeffs[i]) > 1e-9) {
+        int64_t deg = i + k;
+        assert(deg < MAX_POLY_DEGREE);
+        rem.coeffs[deg] -= coeff * den.coeffs[i];
+      }
+    }
+  }
+
+  assert(poly_degree(rem) < poly_degree(den));
+
+  return rem;
+}
+
 Poly poly_round_div_scalar(const Poly &x, double divisor) {
   Poly out = create_poly();
   assert(fabs(divisor) > 1e-9);
