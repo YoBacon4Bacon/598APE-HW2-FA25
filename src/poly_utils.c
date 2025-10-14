@@ -13,6 +13,15 @@ Poly create_poly(size_t degree) {
   return p;
 }
 
+Poly copy_poly(const Poly &p) {
+  Poly copy;
+  for (size_t i = 0; i <= p.max_degree; i++) {
+    copy.coeffs[i] = p.coeffs[i];
+  }
+  copy.max_degree = p.max_degree;
+  return copy;
+}
+
 double positive_fmod(double x, double m) {
   assert(m > 0.0);
   double r = fmod(x, m);
@@ -100,7 +109,7 @@ Poly poly_rem(const Poly &num, const Poly &den) {
   size_t ndeg = poly_degree(num);
   size_t ddeg = poly_degree(den);
 
-  Poly rem = num;
+  Poly rem = copy_poly(num);
 
   if (ndeg < ddeg) {
     return rem;
@@ -114,7 +123,7 @@ Poly poly_rem(const Poly &num, const Poly &den) {
     double r_coeff = get_coeff(rem, target_deg);
     double coeff = trunc(round(r_coeff) / round(d_lead));
 
-    for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+    for (size_t i = 0; i <= den.max_degree; i++) {
       if (fabs(den.coeffs[i]) > 1e-9) {
         int64_t deg = i + k;
         assert(deg < MAX_POLY_DEGREE);
@@ -124,6 +133,9 @@ Poly poly_rem(const Poly &num, const Poly &den) {
   }
 
   assert(poly_degree(rem) < poly_degree(den));
+
+  // why not
+  rem.max_degree = poly_degree(rem);
 
   return rem;
 }
