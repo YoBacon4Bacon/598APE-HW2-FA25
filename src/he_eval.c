@@ -36,11 +36,11 @@ Ciphertext mul_plain(const Ciphertext &ct, double q, double t, const Poly &poly_
 Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, double t,
                       double p, const Poly &poly_mod, const EvalKey &rlk) {
   size_t n = std::max({
-    c1.c0.max_degree,
-    c2.c0.max_degree,
-    c1.c1.max_degree,
-    c2.c1.max_degree
-  });
+    c1.c0.coeffs.size(),
+    c2.c0.coeffs.size(),
+    c1.c1.coeffs.size(),
+    c2.c1.coeffs.size()
+  }) - 1;
   Poly c0_prod = ring_mul_no_mod_q(c1.c0, c2.c0, poly_mod);
   Poly c1_left = ring_mul_no_mod_q(c1.c0, c2.c1, poly_mod);
   Poly c1_right = ring_mul_no_mod_q(c1.c1, c2.c0, poly_mod);
@@ -50,13 +50,17 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
   Poly c0_res = create_poly(n);
   Poly c1_res = create_poly(n);
   Poly c2_res = create_poly(n);
-  for (size_t i = 0; i <= n; i++) {
+  for (size_t i = 0; i < c0_prod.coeffs.size() && i <= n; i++) {
     if (fabs(c0_prod.coeffs[i]) > 1e-9) {
       c0_res.coeffs[i] = round(t * c0_prod.coeffs[i] / q);
     }
+  }
+  for (size_t i = 0; i < c1_sum.coeffs.size() && i <= n; i++) {
     if (fabs(c1_sum.coeffs[i]) > 1e-9) {
       c1_res.coeffs[i] = round(t * c1_sum.coeffs[i] / q);
     }
+  }
+  for (size_t i = 0; i < c2_prod.coeffs.size() && i <= n; i++) {
     if (fabs(c2_prod.coeffs[i]) > 1e-9) {
       c2_res.coeffs[i] = round(t * c2_prod.coeffs[i] / q);
     }
@@ -72,12 +76,14 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
 
   Poly div_b = create_poly(n);
   Poly div_a = create_poly(n);
-  for (size_t i = 0; i <= n; i++) {
+  for (size_t i = 0; i < prod_b.coeffs.size() && i <= n; i++) {
     double vb = prod_b.coeffs[i];
-    double va = prod_a.coeffs[i];
     if (fabs(vb) > 1e-9) {
       div_b.coeffs[i] = round(vb / p);
     }
+  }
+  for (size_t i = 0; i < prod_a.coeffs.size() && i <= n; i++) {
+    double va = prod_a.coeffs[i];
     if (fabs(va) > 1e-9) {
       div_a.coeffs[i] = round(va / p);
     }

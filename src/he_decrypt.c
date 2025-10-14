@@ -11,7 +11,7 @@ double decrypt(const SecretKey &sk, size_t n, double q, const Poly &poly_mod, do
 
   Poly dec = create_poly(n);
 
-  for (size_t i = 0; i <= n; i++) {
+  for (size_t i = 0; i < scaled_pt.coeffs.size() && i <= n; i++) {
     if (fabs(scaled_pt.coeffs[i]) > 1e-9) {
       double v = round(scaled_pt.coeffs[i]);
       double result = round(t * v / q);
