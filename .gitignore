@@ -4,3 +4,9 @@ bin/
 
 perf.data
 perf.data.old
+output/fhe_grayscale.png
+output/grayscale.png
+output/original.png
+output/plaintext_grayscale.png
+output/sobel_fhe.png
+output/sobel_plain.png
