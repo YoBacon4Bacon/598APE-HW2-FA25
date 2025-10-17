@@ -25,11 +25,11 @@ int main() {
   printf("[+] Public Key:\n\n");
   printf("\t pk.b: [");
   int first = 1;
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i < pk.b.coeffs.size(); i++) {
     if (fabs(pk.b.coeffs[i]) > 1e-9) {
       if (!first)
         printf(", ");
-      printf("%d:%.0f", i, pk.b.coeffs[i]);
+      printf("%zu:%.0f", i, pk.b.coeffs[i]);
       first = 0;
     }
   }
@@ -37,11 +37,11 @@ int main() {
 
   printf("\t pk.a: [");
   first = 1;
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i < pk.a.coeffs.size(); i++) {
     if (fabs(pk.a.coeffs[i]) > 1e-9) {
       if (!first)
         printf(", ");
-      printf("%d:%.0f", i, pk.a.coeffs[i]);
+      printf("%zu:%.0f", i, pk.a.coeffs[i]);
       first = 0;
     }
   }
@@ -58,11 +58,11 @@ int main() {
   printf("[+] Ciphertext ct1(%ld):\n\n", pt1);
   printf("\t ct1_0: [");
   first = 1;
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i < ct1.c0.coeffs.size(); i++) {
     if (fabs(ct1.c0.coeffs[i]) > 1e-9) {
       if (!first)
         printf(", ");
-      printf("%d:%.0f", i, ct1.c0.coeffs[i]);
+      printf("%zu:%.0f", i, ct1.c0.coeffs[i]);
       first = 0;
     }
   }
@@ -70,11 +70,11 @@ int main() {
 
   printf("\t ct1_1: [");
   first = 1;
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i < ct1.c1.coeffs.size(); i++) {
     if (fabs(ct1.c1.coeffs[i]) > 1e-9) {
       if (!first)
         printf(", ");
-      printf("%d:%.0f", i, ct1.c1.coeffs[i]);
+      printf("%zu:%.0f", i, ct1.c1.coeffs[i]);
       first = 0;
     }
   }
@@ -83,11 +83,11 @@ int main() {
   printf("[+] Ciphertext ct2(%ld):\n\n", pt2);
   printf("\t ct2_0: [");
   first = 1;
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i < ct2.c0.coeffs.size(); i++) {
     if (fabs(ct2.c0.coeffs[i]) > 1e-9) {
       if (!first)
         printf(", ");
-      printf("%d:%.0f", i, ct2.c0.coeffs[i]);
+      printf("%zu:%.0f", i, ct2.c0.coeffs[i]);
       first = 0;
     }
   }
@@ -95,11 +95,11 @@ int main() {
 
   printf("\t ct2_1: [");
   first = 1;
-  for (int i = 0; i < MAX_POLY_DEGREE; i++) {
+  for (size_t i = 0; i < ct2.c1.coeffs.size(); i++) {
     if (fabs(ct2.c1.coeffs[i]) > 1e-9) {
       if (!first)
         printf(", ");
-      printf("%d:%.0f", i, ct2.c1.coeffs[i]);
+      printf("%zu:%.0f", i, ct2.c1.coeffs[i]);
       first = 0;
     }
   }

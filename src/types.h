@@ -3,15 +3,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-#define MAX_POLY_DEGREE 10000
+#include <vector>
 
 typedef struct {
-  double coeffs[MAX_POLY_DEGREE];
-
-  // an upper bound on polynomial degree.
-  // coeffs[max_degree+1:] is assumed to be garbage
-  size_t max_degree;
+  std::vector<double> coeffs;  // resizable array
 } Poly;
 
 typedef struct {
