@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -O2 -lm -g -Werror -std=c++11
+CFLAGS := -O3 -lm -g -Werror -std=c++11 -ffast-math -funroll-loops
 OBJ_DIR := ./bin/
 
 C_FILES := $(wildcard src/*.c)
@@ -29,3 +29,21 @@ clean:
 	rm -f ./*.exe
 	rm -f ./*.o
 	rm -rf $(OBJ_DIR)
+
+
+# Build and run all benchmarks/tests
+run: bench_matmul.exe bench_bw.exe bench_sobel.exe
+	@echo "Running bench_matmul.exe (Ciphertext*Plaintext 16x16)"
+	./bench_matmul.exe 0 16
+	@echo "-----------------------------------"
+	@echo "Running bench_matmul.exe (Ciphertext*Ciphertext 32x32)"
+	./bench_matmul.exe 1 32
+	@echo "-----------------------------------"
+	@echo "Building and running bench_bw.exe (B+W converter)"
+	./bench_bw.exe inputs/bird.jpg
+	@echo "-----------------------------------"
+	@echo "Building and running bench_sobel.exe (Sobel filter)"
+	./bench_sobel.exe inputs/bird.jpg
+
+.PHONY: all clean run bench_matmul.exe bench_bw.exe bench_sobel.exe
+
