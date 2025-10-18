@@ -106,36 +106,19 @@ Poly poly_mul(const Poly &a, const Poly &b) {
 
 Poly poly_rem(const Poly &num, const Poly &den) {
   // In our case `den` should always be (x^n + 1)
-  assert(poly_degree(den) > 0 || fabs(get_coeff(den, 0)) > 1e-9);
-
-  size_t ndeg = poly_degree(num);
-  size_t ddeg = poly_degree(den);
-
-  Poly rem = copy_poly(num);
-
-  if (ndeg < ddeg) {
-    return rem;
-  }
-
-  double d_lead = get_coeff(den, ddeg);
-  assert(fabs(d_lead) > 1e-9);
-
-  for (int64_t k = ndeg - ddeg; k >= 0; --k) {
-    int64_t target_deg = ddeg + k;
-    double r_coeff = get_coeff(rem, target_deg);
-    double coeff = trunc(round(r_coeff) / round(d_lead));
-
-    for (size_t i = 0; i < den.coeffs.size(); i++) {
-      if (fabs(den.coeffs[i]) > 1e-9) {
-        int64_t deg = i + k;
-        rem.coeffs[deg] -= coeff * den.coeffs[i];
-      }
+  size_t num_coeffs = num.coeffs.size();
+  size_t n = poly_degree(den);
+    Poly rem;
+    rem.coeffs.resize(n, 0.0);
+    size_t low_part_size = (num_coeffs < n) ? num_coeffs : n;
+    for (size_t i = 0; i < low_part_size; ++i) {
+        rem.coeffs[i] = num.coeffs[i];
     }
-  }
-
-  assert(poly_degree(rem) < poly_degree(den));
-
-  return rem;
+    size_t high_part_size = num_coeffs;
+    for (size_t i = n; i < high_part_size; ++i) {
+        rem.coeffs[i - n] -= num.coeffs[i];
+    }
+    return rem;
 }
 
 Poly poly_round_div_scalar(const Poly &x, double divisor) {

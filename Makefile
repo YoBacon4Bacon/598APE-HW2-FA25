@@ -23,7 +23,7 @@ bench_bw.exe: $(OBJ_DIR) $(OBJ_FILES) ./benchmark/bench_bw.c
 bench_sobel.exe: $(OBJ_DIR) $(OBJ_FILES) ./benchmark/bench_sobel.c
 	$(CC) ./benchmark/bench_sobel.c -o $@ $(OBJ_FILES) $(CFLAGS)
 
-everything: all bench_matmul.exe bench_bw.exe bench_sobel.exe
+everything: clean all bench_matmul.exe bench_bw.exe bench_sobel.exe
 
 clean:
 	rm -f ./*.exe
@@ -32,7 +32,7 @@ clean:
 
 
 # Build and run all benchmarks/tests
-run: bench_matmul.exe bench_bw.exe bench_sobel.exe
+run:
 	@echo "Running bench_matmul.exe (Ciphertext*Plaintext 16x16)"
 	./bench_matmul.exe 0 16
 	@echo "-----------------------------------"

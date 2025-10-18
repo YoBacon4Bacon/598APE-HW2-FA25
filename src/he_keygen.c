@@ -8,10 +8,9 @@ KeyPair keygen(size_t n, double q, const Poly &poly_mod) {
   Poly a = gen_uniform_poly(n, q);
   Poly e = gen_normal_poly(n, 0.0, 1.0);
 
-  Poly neg_a = poly_mul_scalar(a, -1);
-  Poly as = ring_mul_mod(neg_a, s, q, poly_mod);
-  Poly neg_e = poly_mul_scalar(e, -1);
-  Poly b = ring_add_mod(as, neg_e, q, poly_mod);
+  Poly as = ring_mul_mod(a, s, q, poly_mod);
+  Poly as_plus_e = ring_add_mod(as, e, q, poly_mod);
+  Poly b = poly_mul_scalar(as_plus_e, -1);
 
   KeyPair keys;
   keys.pk.a = a;

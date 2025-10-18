@@ -50,19 +50,20 @@ Ciphertext mul_cipher(const Ciphertext &c1, const Ciphertext &c2, double q, doub
   Poly c0_res = create_poly(n);
   Poly c1_res = create_poly(n);
   Poly c2_res = create_poly(n);
+  const double scale = t / q;
   for (size_t i = 0; i < c0_prod.coeffs.size() && i <= n; i++) {
     if (fabs(c0_prod.coeffs[i]) > 1e-9) {
-      c0_res.coeffs[i] = round(t * c0_prod.coeffs[i] / q);
+      c0_res.coeffs[i] = round(scale * c0_prod.coeffs[i]);
     }
   }
   for (size_t i = 0; i < c1_sum.coeffs.size() && i <= n; i++) {
     if (fabs(c1_sum.coeffs[i]) > 1e-9) {
-      c1_res.coeffs[i] = round(t * c1_sum.coeffs[i] / q);
+      c1_res.coeffs[i] = round(scale * c1_sum.coeffs[i]);
     }
   }
   for (size_t i = 0; i < c2_prod.coeffs.size() && i <= n; i++) {
     if (fabs(c2_prod.coeffs[i]) > 1e-9) {
-      c2_res.coeffs[i] = round(t * c2_prod.coeffs[i] / q);
+      c2_res.coeffs[i] = round(scale * c2_prod.coeffs[i]);
     }
   }
 
